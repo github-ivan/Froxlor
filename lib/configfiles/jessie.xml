@@ -3921,6 +3921,10 @@ memsbygid   SELECT members \
 gidsbymem   SELECT CONCAT_WS(',', gid) as gid \
             FROM ftp_groups \
             WHERE FIND_IN_SET('%1$s', members)
+# use query below if you enable POSIX ACL setting
+#gidsbymem   SELECT gid \
+#            FROM ftp_groups \
+#            WHERE groupname = '%1$s'
 
 host		<SQL_HOST>
 database	<SQL_DB>

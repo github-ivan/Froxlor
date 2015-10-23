@@ -509,6 +509,7 @@ INSERT INTO `panel_settings` (`settinggroup`, `varname`, `value`) VALUES
 	('system', 'dns_createhostnameentry', '0'),
 	('system', 'send_cron_errors', '0'),
 	('system', 'apacheitksupport', '0'),
+	('system', 'use_posixacl', '0'),
 	('panel', 'decimal_places', '4'),
 	('panel', 'adminmail', 'admin@SERVERNAME'),
 	('panel', 'phpmyadmin_url', ''),

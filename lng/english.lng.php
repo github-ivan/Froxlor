@@ -1852,3 +1852,8 @@ $lng['admin']['specialsettings_replacements'] = "You can use the following varia
 $lng['serversettings']['default_vhostconf']['description'] = 'The content of this field will be included into this ip/port vHost container directly. '.$lng['admin']['specialsettings_replacements'].' Attention: The code won\'t be checked for any errors. If it contains errors, webserver might not start again!';
 $lng['serversettings']['default_vhostconf_domain']['description'] = 'The content of this field will be included into the domain vHost container directly. '.$lng['admin']['specialsettings_replacements'].' Attention: The code won\'t be checked for any errors. If it contains errors, webserver might not start again!';
 $lng['admin']['mod_fcgid_umask']['title'] = 'Umask (default: 022)';
+
+// Added by ivan
+$lng['serversettings']['use_posixacl']['title'] = 'Use POSIX ACL';
+$lng['serversettings']['use_posixacl']['description'] = 'It allows to avoid webserver membership in customer group. It changes PHP-FPM socket group to webserver group implicitly.';
+

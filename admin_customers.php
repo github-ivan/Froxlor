@@ -843,19 +843,21 @@ if ($page == 'customers'
 							'customerid' => $customerid,
 							'groupname' => $loginname,
 							'guid' => $guid,
-							'members' => $loginname.','.Settings::Get('system.httpuser')
+							'members' => Settings::Get('system.use_posixacl') ? $loginname : $loginname.','.Settings::Get('system.httpuser')
 					);
 
-					// also, add froxlor-local user to ftp-group (if exists!) to
-					// allow access to customer-directories from within the panel, which
-					// is necessary when pathedit = Dropdown
-					if ((int)Settings::Get('system.mod_fcgid_ownvhost') == 1 || (int)Settings::Get('phpfpm.enabled_ownvhost') == 1) {
-						if ((int)Settings::Get('system.mod_fcgid') == 1) {
-							$local_user = Settings::Get('system.mod_fcgid_httpuser');
-						} else {
-							$local_user = Settings::Get('phpfpm.vhost_httpuser');
+					if (Settings::Get('system.use_posixacl') == 0) {
+						// also, add froxlor-local user to ftp-group (if exists!) to
+						// allow access to customer-directories from within the panel, which
+						// is necessary when pathedit = Dropdown
+						if ((int)Settings::Get('system.mod_fcgid_ownvhost') == 1 || (int)Settings::Get('phpfpm.enabled_ownvhost') == 1) {
+							if ((int)Settings::Get('system.mod_fcgid') == 1) {
+								$local_user = Settings::Get('system.mod_fcgid_httpuser');
+							} else {
+								$local_user = Settings::Get('phpfpm.vhost_httpuser');
+							}
+							$ins_data['members'] .= ','.$local_user;
 						}
-						$ins_data['members'] .= ','.$local_user;
 					}
 
 					Database::pexecute($ins_stmt, $ins_data);

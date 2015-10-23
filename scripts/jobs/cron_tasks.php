@@ -158,6 +158,14 @@ while ($row = $result_tasks_stmt->fetch(PDO::FETCH_ASSOC)) {
 			if (Settings::Get('system.mod_fcgid') == 1 || Settings::Get('phpfpm.enabled') == 1) {
 				// fcgid or fpm
 				safe_exec('chmod 0750 ' . escapeshellarg($userhomedir));
+				if (Settings::Get('system.use_posixacl') == 1) {
+					$cmd = 'setfacl -m g:' . Settings::Get('system.httpgroup') . ':rx ' . escapeshellarg($userhomedir);
+					$cronlog->logAction(CRON_ACTION, LOG_NOTICE, 'Running: ' . $cmd);
+					safe_exec($cmd);
+					$cmd = 'setfacl -d -m g:' . Settings::Get('system.httpgroup') . ':rx ' . escapeshellarg($userhomedir);
+					$cronlog->logAction(CRON_ACTION, LOG_NOTICE, 'Running: ' . $cmd);
+					safe_exec($cmd);
+				}
 			} else {
 				// mod_php -> no libnss-mysql -> no webserver-user in group
 				safe_exec('chmod 0755 ' . escapeshellarg($userhomedir));

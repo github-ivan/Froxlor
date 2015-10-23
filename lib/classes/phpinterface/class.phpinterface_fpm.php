@@ -136,6 +136,7 @@ class phpinterface_fpm {
 			$fpm_max_spare_servers = (int)Settings::Get('phpfpm.max_spare_servers');
 			$fpm_requests = (int)Settings::Get('phpfpm.max_requests');
 			$fpm_process_idle_timeout = (int)Settings::Get('phpfpm.idle_timeout');
+			$use_posixacl = (bool)Settings::Get('system.use_posixacl');
 
 			if ($fpm_children == 0) {
 				$fpm_children = 1;
@@ -146,10 +147,20 @@ class phpinterface_fpm {
 			$fpm_config.= 'listen = '.$this->getSocketFile()."\n";
 			if ($this->_domain['loginname'] == 'froxlor.panel') {
 				$fpm_config.= 'listen.owner = '.$this->_domain['guid']."\n";
-				$fpm_config.= 'listen.group = '.$this->_domain['guid']."\n";
-			} else {
+				if ($use_posixacl) {
+					$fpm_config.= 'listen.group = '.Settings::Get('system.httpgroup')."\n";
+				} else {
+					$fpm_config.= 'listen.group = '.$this->_domain['guid']."\n";
+				}
+			}
+			else
+			{
 				$fpm_config.= 'listen.owner = '.$this->_domain['loginname']."\n";
-				$fpm_config.= 'listen.group = '.$this->_domain['loginname']."\n";
+				if ($use_posixacl) {
+					$fpm_config.= 'listen.group = '.Settings::Get('system.httpgroup')."\n";
+				} else {
+					$fpm_config.= 'listen.group = '.$this->_domain['loginname']."\n";
+				}
 			}
 			// see #1418 why this is 0660
 			$fpm_config.= 'listen.mode = 0660'."\n";

@@ -277,9 +277,10 @@ class IntegrityCheck {
 	 */
 	public function WebserverGroupMemberForFcgidPhpFpm($fix = false) {
 
-	    if (Settings::Get('system.mod_fcgid') == 0 && Settings::Get('phpfpm.enabled') == 0) {
-	        return true;
-	    }
+            if ((Settings::Get('system.use_posixacl') == 1) ||
+                (Settings::Get('system.mod_fcgid') == 0 && Settings::Get('phpfpm.enabled') == 0)) {
+                return true;
+            }
 
 	    // get all customers that don't have the webserver-user in their group
 	    $cwg_stmt = Database::prepare("
@@ -324,9 +325,10 @@ class IntegrityCheck {
 	 */
 	public function FroxlorLocalGroupMemberForFcgidPhpFpm($fix = false) {
 
-	    if (Settings::Get('system.mod_fcgid') == 0 && Settings::Get('phpfpm.enabled') == 0) {
-	        return true;
-	    }
+            if ((Settings::Get('system.use_posixacl') == 1) ||
+                (Settings::Get('system.mod_fcgid') == 0 && Settings::Get('phpfpm.enabled') == 0)) {
+                return true;
+            }
 
 	    if (Settings::get('system.mod_fcgid') == 1) {
 	        if (Settings::get('system.mod_fcgid_ownvhost') == 0) {

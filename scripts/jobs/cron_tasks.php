@@ -159,12 +159,35 @@ while ($row = $result_tasks_stmt->fetch(PDO::FETCH_ASSOC)) {
 				// fcgid or fpm
 				safe_exec('chmod 0750 ' . escapeshellarg($userhomedir));
 				if (Settings::Get('system.use_posixacl') == 1) {
-					$cmd = 'setfacl -m g:' . Settings::Get('system.httpgroup') . ':rx ' . escapeshellarg($userhomedir);
+					$http_group = Settings::Get('system.httpgroup');
+
+					$cmd = 'setfacl -m g:' . $http_group . ':rx ' . escapeshellarg($userhomedir);
 					$cronlog->logAction(CRON_ACTION, LOG_NOTICE, 'Running: ' . $cmd);
 					safe_exec($cmd);
-					$cmd = 'setfacl -d -m g:' . Settings::Get('system.httpgroup') . ':rx ' . escapeshellarg($userhomedir);
+					$cmd = 'setfacl -d -m g:' . $http_group . ':rx ' . escapeshellarg($userhomedir);
 					$cronlog->logAction(CRON_ACTION, LOG_NOTICE, 'Running: ' . $cmd);
 					safe_exec($cmd);
+
+					// also, add froxlor-local user to ftp-group (if exists!) to
+					// allow access to customer-directories from within the panel, which
+					// is necessary when pathedit = Dropdown
+					if ((int)Settings::Get('system.mod_fcgid_ownvhost') == 1 || (int)Settings::Get('phpfpm.enabled_ownvhost') == 1) {
+						$local_user = "";
+
+						if ((int)Settings::Get('system.mod_fcgid') == 1) {
+							$local_user = Settings::Get('system.mod_fcgid_httpuser');
+						} else {
+							$local_user = Settings::Get('phpfpm.vhost_httpuser');
+						}
+						if ($local_user != $http_group) {
+							$cmd = 'setfacl -m g:' . $local_user . ':rx ' . escapeshellarg($userhomedir);
+							$cronlog->logAction(CRON_ACTION, LOG_NOTICE, 'Running: ' . $cmd);
+							safe_exec($cmd);
+							$cmd = 'setfacl -d -m g:' . $local_user . ':rx ' . escapeshellarg($userhomedir);
+							$cronlog->logAction(CRON_ACTION, LOG_NOTICE, 'Running: ' . $cmd);
+							safe_exec($cmd);
+						}
+					}
 				}
 			} else {
 				// mod_php -> no libnss-mysql -> no webserver-user in group
